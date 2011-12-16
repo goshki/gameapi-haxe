@@ -1,0 +1,5 @@
+-cp ..\..\Lib
+-swf-version 10
+-swf test.swf
+-main Test
+-swf-header 640:480:24:000000
