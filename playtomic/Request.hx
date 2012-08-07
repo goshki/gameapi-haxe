@@ -36,15 +36,15 @@ package playtomic;
 import haxe.Md5;
 import haxe.Timer;
 
-#if flash
-import flash.net.URLLoader;
-import flash.net.URLRequest;
-import flash.net.URLVariables;
-import flash.events.Event;
-import flash.utils.ByteArray;
-#else
-import hax.remoting;
-#end
+//#if flash
+import nme.net.URLLoader;
+import nme.net.URLRequest;
+import nme.net.URLVariables;
+import nme.events.Event;
+import nme.utils.ByteArray;
+//#else
+//import hax.remoting;
+//#end
 
 class Request extends URLLoader
 {
@@ -66,16 +66,16 @@ class Request extends URLLoader
 	{
 		super();
     
-    #if flash
+    //#if flash
 		urlRequest = new URLRequest();
-		addEventListener("ioError", Fail);
+		/*addEventListener("ioError", Fail);
 		addEventListener("networkError", Fail);
 		addEventListener("verifyError", Fail);
 		addEventListener("diskError", Fail);
 		addEventListener("securityError", Fail);
 		addEventListener("httpStatus", HTTPStatusIgnore);
-		addEventListener("complete", Complete);
-		#end
+		addEventListener("complete", Complete);*/
+	//	#end
 	}
 
 	public static function Initialise():Void
@@ -100,15 +100,14 @@ class Request extends URLLoader
 			Pool.push(new Request());
 	}
 	
-	public static function SendStatistics(completeHandler:Dynamic->Dynamic->Dynamic->Dynamic->Void, url:String):Void
-	{
+	public static function SendStatistics(completeHandler:Dynamic->Dynamic->Dynamic->Dynamic->Void, url:String):Void {
 		var request:Request = Pool.length > 0 ? Pool.pop() : new Request();
 		request.time = 0;
 		request.handled = false;
 		request.completeHandler = completeHandler;
 		request.callbackHandler = null;
 		request.logging = true;
-		request.urlRequest.url = URLStub + url + (url.indexOf("?") > -1 ? "&" : "?") + URLTail + "&" + Math.random() + "Z";
+        request.urlRequest = new URLRequest( URLStub + url + (url.indexOf("?") > -1 ? "&" : "?") + URLTail + "&" + Math.random() + "Z" );
 		request.urlRequest.method = "GET";
 		request.urlRequest.data = null;
 		request.postdata = null;
@@ -168,7 +167,7 @@ class Request extends URLLoader
     //postvars["data"] = Escape(Encode.Base64(pda));
     postvars.data = Escape(Encode.Base64(pda));
 		
-		request.urlRequest.url = url;
+		request.urlRequest = new URLRequest( url );
 		request.urlRequest.method = "POST";
 		request.urlRequest.data = postvars;
 		
@@ -295,27 +294,28 @@ class Request extends URLLoader
 			
 		request.handled = true;
 		
-		if(request.logging)
-		{
-			// karg: calling a handler with different number and types of arguments is a quite a design flaw :)
-      //request.completeHandler(true);
-      Reflect.callMethod(request, "completeHandler", [true]);
+		/*if ( request.logging ) {
+            // karg: calling a handler with different number and types of arguments is a quite a design flaw :)
+            //request.completeHandler(true);
+            if ( Reflect.isFunction( request.completeHandler ) ) {
+                Reflect.callMethod(request, "completeHandler", [true]);
+            }
 			return;
-		}
+		}*/
 		
 		//trace(Request.data);
 		
-		var data:Xml = Xml.parse(request.data);
+		//var data:Xml = Xml.parse(request.data);
 		
     // karg: haxe Xml works a bit different
     //var status:Int = Std.parseInt(data["status"]);
 		//var errorcode:Int = Std.parseInt(data["errorcode"]);
 
     // karg: we should also be defensive and check if data xml actually has those attributes
-    var status:Int = data.exists("status") ? Std.parseInt(data.get("status")) : -1;
-		var errorcode:Int = data.exists("errorcode") ? Std.parseInt(data.get("errorcode")) : -1;
+    //var status:Int = data.exists("status") ? Std.parseInt(data.get("status")) : -1;
+	//	var errorcode:Int = data.exists("errorcode") ? Std.parseInt(data.get("errorcode")) : -1;
 		
-    request.completeHandler(request.callbackHandler, request.postdata, data, new Response(status, errorcode));
+    //request.completeHandler(request.callbackHandler, request.postdata, data, new Response(status, errorcode));
 	}
 	
 	#if flash
@@ -347,8 +347,8 @@ class Request extends URLLoader
 	{
 	}
 	#else
-	//private static function Fail():Void { }
-	//private static function HTTPStatusIgnore():Void { }
+	private static function Fail():Void { }
+	private static function HTTPStatusIgnore():Void { }
 	#end
 	
 	private static function Dispose(request:Request):Void

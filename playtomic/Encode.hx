@@ -32,10 +32,10 @@
 
 package playtomic;
 
-#if flash
-import flash.utils.ByteArray;
-import flash.display.BitmapData;
-#end // flash
+//#if flash
+import nme.utils.ByteArray;
+import nme.display.BitmapData;
+//#end // flash
 
 class Encode
 {	
@@ -60,9 +60,15 @@ class Encode
 		var output:String = "";
 		var dataBuffer:Array<Int>;
 		var outputBuffer = new Array<Int>(/*4*/);
+        #if flash
 		var i:UInt;
 		var j:UInt;
 		var k:UInt;
+        #else
+        var i:Int;
+		var j:Int;
+		var k:Int;
+        #end
 
     // karg: 4 elements in outputBuffer
     for(i in 0...4)
@@ -183,7 +189,7 @@ class Encode
 	//
 	// Copyright (c) 2008, Adobe Systems Incorporated
 	// All rights reserved.		
-   public static function PNG(img:BitmapData):ByteArray 
+   /*public static function PNG(img:BitmapData):ByteArray 
    {
 		// Create output byte array
 		var png:ByteArray = new ByteArray();
@@ -230,7 +236,11 @@ class Encode
 		return png;
 	}
 
+    #if flash
 	private static var crcTable:Array<UInt>;
+    #else
+    private static var crcTable:Array<Int>;
+    #end
 	private static var crcTableComputed:Bool = false;
 
 	private static function writeChunk(png:ByteArray, type:UInt, data:ByteArray):Void 
@@ -293,5 +303,5 @@ class Encode
 		c = c ^ 0xffffffff;
 		png.position = e;
 		png.writeUnsignedInt(c);
-	}
+	}*/
 }

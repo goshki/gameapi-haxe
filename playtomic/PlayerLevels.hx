@@ -34,12 +34,12 @@ package playtomic;
 
 import haxe.Md5;
 
-#if flash
-import flash.display.DisplayObject;
-import flash.display.BitmapData;
-import flash.geom.Matrix;
-import flash.net.SharedObject;
-#end
+//#if flash
+import nme.display.DisplayObject;
+import nme.display.BitmapData;
+import nme.geom.Matrix;
+import nme.net.SharedObject;
+//#end
 
 class PlayerLevels
 {	

@@ -92,7 +92,7 @@ class PlayerLevel
 		return "http://g" + Log.GUID + ".api.playtomic.com/playerlevels/thumb.aspx?swfid=" + Log.SWFID + "&levelid=" + this.LevelId;
 	}
 	#else
-	public function SetThumb(thubmdata:string):Void
+	public function SetThumb(thubmdata:String):Void
 	{
 	}
 

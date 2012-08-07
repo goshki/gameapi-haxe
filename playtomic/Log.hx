@@ -36,11 +36,11 @@ import haxe.Timer;
 
 #if flash
 import flash.system.Security;
-import flash.net.SharedObject;
 #end
+import nme.net.SharedObject;
 
-class Log
-{
+
+class Log {
 	// API settings
 	private static var Enabled:Bool = false;
 	private static var Queue:Bool = true;
@@ -52,9 +52,9 @@ class Log
 	public static var BaseUrl:String;
 
 	// play timer, goal tracking etc
-	#if flash
+	//#if flash
 	private static var Cookie:SharedObject;
-	#end
+	//#end
 
 	public static var LogQueue:LogRequest;
 	private static var PingR:Timer;
@@ -78,47 +78,45 @@ class Log
 	 * @param	apikey		Your secret API key from the Playtomic dashboard
 	 * @param	defaulturl	Should be root.loaderInfo.loaderURL or some other default url value to be used if we can't detect the page
 	 */
-	public static function View(swfid:Int = 0, guid:String = "", apikey:String = "", defaulturl:String = ""):Void
-	{
-		if(SWFID > 0)
+	public static function View( swfid:Int = 0, guid:String = "", apikey:String = "", defaulturl:String = "" ):Void {
+		if ( SWFID > 0 ) {
 			return;
+        }
 
 		SWFID = swfid;
 		GUID = guid;
 		Enabled = true;
 
-		if((SWFID == 0 || GUID == ""))
-		{
+		if ( ( SWFID == 0 || GUID == "" ) ) {
 			Enabled = false;
 			return;
 		}
 
-		SourceUrl = GetUrl(defaulturl);
+		SourceUrl = GetUrl( defaulturl );
 
-		if(SourceUrl == null || SourceUrl == "")
-		{
+		if ( SourceUrl == null || SourceUrl == "" ) {
 			Enabled = false;
 			return;
 		}
 		
 		BaseUrl = SourceUrl.split("://")[1];
 		BaseUrl = BaseUrl.substr(0, BaseUrl.indexOf("/"));
-		
+        
 		//SourceUrl = Request.Escape(SourceUrl);
 		//BaseUrl = Request.Escape(BaseUrl);
 		
-		Parse.Initialise(apikey);
-		GeoIP.Initialise(apikey);
-		Data.Initialise(apikey);
-		Leaderboards.Initialise(apikey);
-		GameVars.Initialise(apikey);
-		PlayerLevels.Initialise(apikey);
+		//Parse.Initialise(apikey);
+		//GeoIP.Initialise(apikey);
+		//Data.Initialise(apikey);
+		//Leaderboards.Initialise(apikey);
+		//GameVars.Initialise(apikey);
+		//PlayerLevels.Initialise(apikey);
 		Request.Initialise();	
 		
 		LogQueue = LogRequest.Create();
-		#if flash
+		//#if flash
 		Cookie = SharedObject.getLocal("playtomic");
-		#end
+		//#end
 		
 		// Load the security context
 		//trace("*** WARNING CROSSDOMAIN IS LOADING FROM .DEV ***");
@@ -127,18 +125,18 @@ class Log
 		#end
 					
 		// Check the URL is http		
-		if(defaulturl.indexOf("http://") != 0 && Security.sandboxType != "localWithNetwork" && Security.sandboxType != "localTrusted")
-		{
-			Enabled = false;
-			return;
-		}
+		//if(defaulturl.indexOf("http://") != 0 && Security.sandboxType != "localWithNetwork" && Security.sandboxType != "localTrusted")
+		//{
+		//	Enabled = false;
+		//	return;
+		//}
 		
 		// Log the view (first or repeat visitor)
-		var views:Int = GetCookie("views");
-		Send("v/" + (views + 1), true);
+		var views:Int = GetCookie( "views" );
+		Send( "v/" + ( views + 1 ), true );
 
 		// Start the play timer
-		Timer.delay(PingServer, 60000);
+		Timer.delay( PingServer, 60000 );
 	}
 
 	/**
@@ -241,7 +239,7 @@ class Log
 			LevelCounters.push(key);
 		}
 		
-		Send("lc/" + Clean(name) + "/" + Clean(level.toStd.string()));
+		Send("lc/" + Clean( name ) + "/" + Clean( Std.string( level ) ) );
 	}
 	
 	/**
@@ -291,7 +289,7 @@ class Log
 			LevelAverages.push(key);
 		}
 		
-		Send("la/" + Clean(name) + "/" + Clean(level.ToStd.string()) + "/" + value);
+		Send( "la/" + Clean( name ) + "/" + Clean( Std.string( level ) ) + "/" + value );
 	}
 
 	private static function ArrayContains(arr:Array<String>, key:String):Bool
@@ -486,7 +484,7 @@ class Log
 	 */
 	private static function GetCookie(n:String):Int
 	{
-		#if flash
+		//#if flash
 		if(Reflect.field(Cookie.data, n) == null)
 		{
 			return 0;
@@ -497,7 +495,7 @@ class Log
       //return Std.parseInt(Cookie.data[n]);
       return Std.parseInt(cast(Reflect.field(Cookie.data, n), String));
 		}
-		#end
+		//#end
 
 		return 0;
 	}
@@ -509,7 +507,7 @@ class Log
 	 */
 	private static function SaveCookie(n:String, v:Int):Void
 	{
-		#if flash
+		//#if flash
 		if(Reflect.field(Cookie.data, n) != null)
 		{
       // karg: workarounds
@@ -524,21 +522,17 @@ class Log
       {
       }
     }
-		#end
+		//#end
 	}	
 
 	/**
 	 * Attempts to detect the page url
-	 * @param	defaulturl		The fallback url if page cannot be detected
+	 * @param	defaultUrl		The fallback url if page cannot be detected
 	 */
-	private static function GetUrl(defaulturl:String):String
-	{
-		if(defaulturl == null || defaulturl == "" || defaulturl == "null")
+	private static function GetUrl( defaultUrl:String ):String {
+		if ( defaultUrl == null || defaultUrl == "" || defaultUrl == "null") {
 			return "http://localhost/";
-		
-		if(defaulturl.indexOf("http://") != 0)
-			defaulturl = "http://localhost/";
-
-		return defaulturl;
+        }
+		return defaultUrl;
 	}
 }
